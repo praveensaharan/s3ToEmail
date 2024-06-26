@@ -46,6 +46,10 @@ app.post("/upload", upload.single("image"), async (req, res) => {
   }
 });
 
+app.get("/", (req, res) => {
+  res.send("Welcome to Image Processor");
+});
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
 });
