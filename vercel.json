@@ -2,22 +2,15 @@
   "version": 2,
   "builds": [
     {
-      "src": "index.js",
+      "src": "./index.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "index.js"
+      "dest": "/index.js"
     }
   ],
-  "env": {
-    "OCR_API_KEY": "@ocr_api_key",
-    "GENERATIVE_AI_API_KEY": "@generative_ai_api_key",
-    "EMAIL_VALIDATION_API_KEY": "@email_validation_api_key",
-    "AWS_ACCESS_KEY_ID": "@aws_access_key_id",
-    "AWS_SECRET_ACCESS_KEY": "@aws_secret_access_key",
-    "PORT": "3000"
-  }
+  
 }
