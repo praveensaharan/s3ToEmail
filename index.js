@@ -1,5 +1,6 @@
 const express = require("express");
 const multer = require("multer");
+const cors = require("cors");
 const { getPresignedUrl, uploadImage } = require("./imageUploader");
 const { processImage } = require("./imageProcessor");
 require("dotenv").config();
@@ -9,6 +10,7 @@ const port = process.env.PORT || 3000;
 
 const upload = multer({ storage: multer.memoryStorage() });
 
+app.use(cors()); // Enable CORS
 app.use(express.json());
 
 app.post("/upload", upload.single("image"), async (req, res) => {
