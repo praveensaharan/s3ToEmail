@@ -97,7 +97,7 @@ async function findCompanyByPattern(pattern) {
   try {
     const sqlPattern = `%${pattern}%`;
     const companyDetails = await sql`
-      SELECT id, company_name, email1, email2  FROM company_contacts
+      SELECT id, company_name, email1, email2, email3  FROM company_contacts
       WHERE company_name ILIKE ${sqlPattern}
       OR company_domain ILIKE ${sqlPattern}`;
     console.log(`Details for companies matching pattern "${pattern}":`);
@@ -224,7 +224,90 @@ async function mergeExactDuplicateRows(companyName, companyDomain) {
   }
 }
 
-// Example usage:
+async function insertOrUpdateCompanyContacts(
+  companyName,
+  emails,
+  companyDomain
+) {
+  try {
+    // Check if the company and domain already exist
+    const existingEntries = await sql`
+      SELECT * FROM company_contacts
+      WHERE company_name = ${companyName}
+      AND company_domain = ${companyDomain}
+    `;
+
+    // If there are existing entries, compare emails and update if necessary
+    if (existingEntries.length > 0) {
+      let updatedEmails = new Set();
+
+      // Collect existing emails
+      existingEntries.forEach((entry) => {
+        for (let i = 1; i <= 6; i++) {
+          if (entry[`email${i}`]) {
+            updatedEmails.add(entry[`email${i}`]);
+          }
+        }
+      });
+
+      // Add new emails
+      emails.forEach((email) => {
+        if (email) {
+          updatedEmails.add(email);
+        }
+      });
+
+      // Convert the set back to an array and prepare for update
+      const emailArray = Array.from(updatedEmails)
+        .slice(0, 6)
+        .concat(Array(6).fill(null))
+        .slice(0, 6);
+
+      // Update the first existing entry with all collected emails
+      const firstEntryId = existingEntries[0].id;
+      await sql`
+        UPDATE company_contacts
+        SET
+          email1 = ${emailArray[0]},
+          email2 = ${emailArray[1]},
+          email3 = ${emailArray[2]},
+          email4 = ${emailArray[3]},
+          email5 = ${emailArray[4]},
+          email6 = ${emailArray[5]},
+          verify = true
+        WHERE id = ${firstEntryId}
+      `;
+
+      console.log("Successfully updated company contacts with new emails.");
+    } else {
+      // If no existing entries, insert the new company and emails
+      const emailValues = emails
+        .slice(0, 6)
+        .concat(Array(6).fill(null))
+        .slice(0, 6);
+
+      await sql`
+        INSERT INTO company_contacts (
+          company_name,
+          email1, email2, email3, email4, email5, email6,
+          verify,
+          company_domain
+        ) VALUES (
+          ${companyName},
+          ${emailValues[0]}, ${emailValues[1]}, ${emailValues[2]},
+          ${emailValues[3]}, ${emailValues[4]}, ${emailValues[5]},
+          true,
+          ${companyDomain}
+        )
+      `;
+
+      console.log("Successfully inserted new company contacts.");
+    }
+  } catch (err) {
+    console.error("Error inserting or updating company contacts:", err);
+  }
+}
+
 (async () => {
   await findCompanyByPattern("Accentu");
   await findCompaniesWithSameName();
