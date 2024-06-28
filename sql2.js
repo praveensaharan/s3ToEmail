@@ -44,8 +44,7 @@ async function findCompanyByPattern(pattern) {
 
 async function printTableContents() {
   try {
-    const tableContents =
-      await sql`SELECT email1, email2, email3 FROM company_contacts LIMIT 20`;
+    const tableContents = await sql`SELECT * FROM company_contacts LIMIT 20`;
     console.log("First 20 Table Contents:");
     return tableContents;
   } catch (err) {
