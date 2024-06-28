@@ -5,7 +5,11 @@ const { getPresignedUrl, uploadImage } = require("./imageUploader");
 const { processImage } = require("./imageProcessor");
 const { processText } = require("./textProcessor");
 const connectDB = require("./database");
-const { getPgVersion } = require("./sql2");
+const {
+  getPgVersion,
+  findCompanyByPattern,
+  printTableContents,
+} = require("./sql2");
 const Result = require("./Routes/Results");
 require("dotenv").config();
 
@@ -142,6 +146,27 @@ app.get("/pgversion", async (req, res) => {
     res.json(version);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch PostgreSQL version" });
+  }
+});
+
+app.get("/tablecontents", async (req, res) => {
+  try {
+    const contents = await printTableContents();
+    res.json(contents);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch table contents" });
+  }
+});
+
+app.get("/search/:pattern", async (req, res) => {
+  const pattern = req.params.pattern;
+  try {
+    const companyDetails = await findCompanyByPattern(pattern);
+    res.json(companyDetails);
+  } catch (err) {
+    res.status(500).json({
+      error: `Failed to search for companies matching pattern "${pattern}"`,
+    });
   }
 });
 
