@@ -5,6 +5,7 @@ const { getPresignedUrl, uploadImage } = require("./imageUploader");
 const { processImage } = require("./imageProcessor");
 const { processText } = require("./textProcessor");
 const connectDB = require("./database");
+const { getPgVersion } = require("./sql2");
 const Result = require("./Routes/Results");
 require("dotenv").config();
 
@@ -132,6 +133,15 @@ app.get("/results", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");
+  }
+});
+
+app.get("/pgversion", async (req, res) => {
+  try {
+    const version = await getPgVersion();
+    res.json(version);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch PostgreSQL version" });
   }
 });
 
