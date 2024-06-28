@@ -22,7 +22,7 @@ async function extractCompany(text) {
   try {
     const genAI = new GoogleGenerativeAI(generativeAiApiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const prompt = `Please extract the company name from the text below. Format it as 'Company Name'. text: ${text}`;
+    const prompt = `Please extract only the company name from the text below. Format it as 'Company Name'. text: ${text}`;
     const result = await model.generateContent(prompt);
     const extractedText = (await result.response.text()).trim();
     return extractedText;

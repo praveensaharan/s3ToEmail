@@ -9,6 +9,7 @@ const {
   getPgVersion,
   findCompanyByPattern,
   printTableContents,
+  insertOrUpdateCompanyContacts,
 } = require("./sql2");
 const Result = require("./Routes/Results");
 require("dotenv").config();
@@ -137,6 +138,60 @@ app.get("/results", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");
+  }
+});
+
+app.delete("/delete/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await Result.findByIdAndDelete(id);
+    if (!result) {
+      return res.status(404).json({ msg: "Result not found" });
+    }
+    res.json({ msg: "Result deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
+  }
+});
+
+app.post("/movetomain/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const mongoDoc = await Result.findById(id);
+
+    if (!mongoDoc) {
+      return res.status(404).json({ error: "Document not found in MongoDB." });
+    }
+    let { company_name, email } = mongoDoc;
+    company_name = company_name.replace(/^['"](.*)['"]$/, "$1");
+
+    const emails = [];
+    emails.push(email);
+
+    const domainMatch = email.match(/@([^@]+)/);
+
+    if (!domainMatch) {
+      return res.status(400).json({ error: "Invalid email format." });
+    }
+
+    const company_domain = domainMatch[1].replace(/\.[^.]*$/, "");
+    // console.log(company_name.slice(2, 5), emails, company_domain);
+
+    await insertOrUpdateCompanyContacts(company_name, emails, company_domain);
+    await Result.findByIdAndDelete(id);
+
+    res.status(200).json({
+      message:
+        "Data moved to main table and deleted from MongoDB successfully.",
+    });
+  } catch (error) {
+    console.error(
+      "Error moving data to main table and deleting from MongoDB:",
+      error
+    );
+    res.status(500).json({ error: "Server error" });
   }
 });
 
