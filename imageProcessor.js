@@ -62,7 +62,8 @@ async function processImage(imageUrl) {
 
   const results = await Promise.all(
     emails.map(async (email) => {
-      const verified = await validateEmail(email);
+      const verified = false;
+      // const verified = await validateEmail(email);
       return {
         company_name: companyName,
         email: email,
