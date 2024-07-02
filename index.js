@@ -155,6 +155,26 @@ app.delete("/delete/:id", async (req, res) => {
   }
 });
 
+app.put("/edit/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    const result = await Result.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+
+    if (!result) {
+      return res.status(404).json({ msg: "Result not found" });
+    }
+
+    res.json({ msg: "Result edited successfully", result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
+  }
+});
+
 app.post("/movetomain/:id", async (req, res) => {
   const { id } = req.params;
 
