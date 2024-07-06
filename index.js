@@ -23,6 +23,13 @@ connectDB();
 
 const app = express();
 const port = process.env.PORT || 3000;
+if (!process.env.CLERK_SECRET_KEY) {
+  console.error(
+    "Error: Missing Clerk Secret Key. Go to https://dashboard.clerk.com and get your key for your instance."
+  );
+  process.exit(1);
+}
+
 let clerkClient;
 
 try {
@@ -31,9 +38,8 @@ try {
   });
 } catch (error) {
   console.error("Error initializing Clerk client:", error);
-  process.exit(1); // Exit the process if Clerk client initialization fails
+  process.exit(1);
 }
-
 const upload = multer({ storage: multer.memoryStorage() });
 
 app.use(cors());
