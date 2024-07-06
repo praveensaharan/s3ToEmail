@@ -5,6 +5,7 @@ const axios = require("axios");
 const emailValidationApiKey = process.env.EMAIL_VALIDATION_API_KEY;
 const ocrApiKey = process.env.OCR_API_KEY;
 const generativeAiApiKey = process.env.GENERATIVE_AI_API_KEY;
+const imageapi = process.env.IMAGE_API_KEY;
 
 async function validateEmail(email) {
   const url = `https://emailvalidation.abstractapi.com/v1/?api_key=${emailValidationApiKey}&email=${email}`;
@@ -19,15 +20,34 @@ async function validateEmail(email) {
   }
 }
 
+// async function extractTextFromImage(imageUrl) {
+//   const url = `https://api.apilayer.com/image_to_text/url?url=${imageUrl}`;
+//   const headers = {
+//     apikey: ocrApiKey,
+//   };
+//   try {
+//     const response = await axios.get(url, { headers });
+//     const result = response.data;
+//     return result.all_text || "";
+//   } catch (error) {
+//     console.error(`Error extracting text from image: ${error}`);
+//     return "";
+//   }
+// }
+
 async function extractTextFromImage(imageUrl) {
-  const url = `https://api.apilayer.com/image_to_text/url?url=${imageUrl}`;
-  const headers = {
-    apikey: ocrApiKey,
-  };
+  const url = `https://api.ocr.space/parse/imageurl?apikey=${imageapi}&url=${imageUrl}`;
+
   try {
-    const response = await axios.get(url, { headers });
+    const response = await axios.get(url);
     const result = response.data;
-    return result.all_text || "";
+    if (result && result.ParsedResults && result.ParsedResults.length > 0) {
+      const parsedText = result.ParsedResults[0].ParsedText;
+      return parsedText || "";
+    } else {
+      console.error("No valid ParsedResults found in the API response.");
+      return "";
+    }
   } catch (error) {
     console.error(`Error extracting text from image: ${error}`);
     return "";

@@ -1,3 +1,29 @@
+const express = require("express");
+const cors = require("cors");
+const connectDB = require("./database");
+require("dotenv").config();
+
+connectDB();
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(cors());
+app.use(express.json());
+
+app.use("/user", require("./routes/user"));
+app.use("/upload", require("./routes/upload"));
+app.use("/result", require("./routes/resultroutes"));
+app.use("/database", require("./routes/database"));
+
+app.get("/", (req, res) => {
+  res.send("Welcome to Image Processor");
+});
+
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}/`);
+});
+
 // const express = require("express");
 // const multer = require("multer");
 // const cors = require("cors");
@@ -299,29 +325,3 @@
 // app.listen(port, () => {
 //   console.log(`Server running at http://localhost:${port}/`);
 // });
-
-const express = require("express");
-const cors = require("cors");
-const connectDB = require("./database");
-require("dotenv").config();
-
-connectDB();
-
-const app = express();
-const port = process.env.PORT || 3000;
-
-app.use(cors());
-app.use(express.json());
-
-app.use("/user", require("./routes/user"));
-app.use("/upload", require("./routes/upload"));
-app.use("/result", require("./routes/resultroutes"));
-app.use("/database", require("./routes/database"));
-
-app.get("/", (req, res) => {
-  res.send("Welcome to Image Processor");
-});
-
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}/`);
-});
