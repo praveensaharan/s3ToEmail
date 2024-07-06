@@ -11,6 +11,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.600.0",
     "@aws-sdk/s3-request-presigner": "^3.600.0",
+    "@clerk/clerk-sdk-node": "^5.0.14",
     "@google/generative-ai": "^0.13.0",
     "axios": "^1.7.2",
     "cors": "^2.8.5",
