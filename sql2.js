@@ -49,8 +49,8 @@ async function findCompanyByPattern(pattern) {
 
 async function printTableContents() {
   try {
-    const tableContents = await sql`SELECT * FROM company_info LIMIT 20`;
-    console.log("First 20 Table Contents:", tableContents);
+    const tableContents = await sql`SELECT * FROM company_info LIMIT 200`;
+    console.log("First 200 Table Contents:", tableContents);
     return tableContents;
   } catch (err) {
     console.error("Error fetching table contents:", err.message);
